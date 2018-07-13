@@ -54,8 +54,34 @@
         (testing "in AWS"
           (let [v (config-aws/read-ssm "/foo/bar")]
             (is (true? (config/provided? v)))
-            (is (= "blah" (config/extract v)))))
+            (is (= "blah" (config/extract v)))
+            (is (= "#config-aws/ssm \"/foo/bar\""
+                   (pr-str v)))))
         (testing "missing from AWS"
           (let [v (config-aws/read-ssm "/foo/baz")]
             (is (false? (config/provided? v)))
-            (is (nil? (config/extract v)))))))))
+            (is (nil? (config/extract v)))
+            (is (= "#config-aws/ssm \"/foo/baz\""
+                   (pr-str v))))))
+      (testing "reading a path vector"
+        (testing "in AWS"
+          (let [v (config-aws/read-ssm ["/foo" "/bar"])]
+            (is (true? (config/provided? v)))
+            (is (= "blah" (config/extract v)))
+            (is (= "#config-aws/ssm [\"/foo\" \"/bar\"]"
+                   (pr-str v)))))
+        (testing "in AWS (using a #config/property)"
+          (System/setProperty "foo.path" "/foo")
+          (let [v (config-aws/read-ssm [#config/property "foo.path" "/bar"])]
+            (is (true? (config/provided? v)))
+            (is (= "blah" (config/extract v)))
+            (is (= "#config-aws/ssm [#config/property \"foo.path\" \"/bar\"]"
+                   (pr-str v)))))
+        (testing "missing from AWS"
+          (let [v (config-aws/read-ssm ["/foo" "/baz"])]
+            (is (false? (config/provided? v)))
+            (is (nil? (config/extract v)))
+            (is (= "#config-aws/ssm [\"/foo\" \"/baz\"]"
+                   (pr-str v))))))))
+  (testing "invalid arguments"
+    (is (thrown? IllegalArgumentException (config-aws/read-ssm 42)))))

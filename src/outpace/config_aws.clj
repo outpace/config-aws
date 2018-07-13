@@ -1,5 +1,6 @@
 (ns outpace.config-aws
-  (:require [outpace.config :as config :refer [defconfig]])
+  (:require [clojure.string :as str]
+            [outpace.config :as config :refer [defconfig]])
   (:import (com.amazonaws.client.builder AwsClientBuilder$EndpointConfiguration)
            (com.amazonaws.services.simplesystemsmanagement AWSSimpleSystemsManagement
                                                            AWSSimpleSystemsManagementClientBuilder)
@@ -72,5 +73,15 @@
   (cond
     (string? config)
     (->SsmVal config
-              (get-parameter @ssm-client config)))
-  )
+              (get-parameter @ssm-client config))
+
+    (vector? config)
+    (->SsmVal config
+              (get-parameter @ssm-client (str/join (into []
+                                                         (map config/extract)
+                                                         config))))
+
+    :default
+    (throw (IllegalArgumentException.
+             (format "Argument to #config-aws/ssm must be a string or a vector: %s"
+                     (pr-str config))))))
