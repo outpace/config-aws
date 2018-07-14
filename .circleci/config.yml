@@ -4,11 +4,12 @@ jobs:
   build:
     working_directory: ~/config-aws
     docker:
-      - image: circleci/clojure:boot
+      - image: circleci/clojure:boot-node
     environment:
       BOOT_JVM_OPTIONS: -Xms512m -Xmx1024m
       BOOT_WATCHERS_DISABLE: yes
     steps:
+      - run: sudo apt-get install make
       - checkout
       - restore_cache:
           key: config-aws-{{ checksum "boot.properties" }}-{{ checksum "build.boot" }}
