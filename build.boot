@@ -73,24 +73,7 @@
   "Runs in development mode, which includes a CIDER-enable nREPL server with
   automatic retesting and namespace refreshment."
   []
-  (set-env! :dependencies #(into % '[[samestep/boot-refresh "0.1.0"]
-                                     [tolitius/boot-check "0.1.9"]
-                                     ]))
-  (require 'samestep.boot-refresh)
-  (require 'tolitius.boot-check)
-  (let [refresh (resolve 'samestep.boot-refresh/refresh)
-        with-bikeshed (resolve 'tolitius.boot-check/with-bikeshed)
-        with-eastwood (resolve 'tolitius.boot-check/with-eastwood)
-        with-kibit (resolve 'tolitius.boot-check/with-kibit)
-        with-yagni (resolve 'tolitius.boot-check/with-yagni)
-        ]
-    (comp (with-dev)
-          (repl :server true)
-          (watch :verbose true)
-          (test)
-          #_(refresh :help true)
-          #_(with-bikeshed)
-          #_(with-eastwood)
-          #_(with-kibit)
-          #_(with-yagni)
-          )))
+  (comp (with-dev)
+        (repl :server true)
+        (watch :verbose true)
+        (test)))
