@@ -9,7 +9,7 @@ jobs:
       BOOT_JVM_OPTIONS: -Xms512m -Xmx1024m
       BOOT_WATCHERS_DISABLE: yes
     steps:
-      - run: sudo apt-get install make
+      - run: sudo apt-get install make python-pip
       - checkout
       - restore_cache:
           key: config-aws-{{ checksum "boot.properties" }}-{{ checksum "build.boot" }}
