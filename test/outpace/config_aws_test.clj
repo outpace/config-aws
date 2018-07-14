@@ -50,6 +50,9 @@
   [params & body]
   `(with-ssm-params* ~params (fn [] (do ~@body))))
 
+;; needed here for when #config/property is read below
+(System/setProperty "foo.path" "/foo")
+
 (deftest test-read-ssm
   (with-localstack
     (with-ssm-params {"/foo/bar" "blah"}
@@ -74,7 +77,6 @@
             (is (= "#config-aws/ssm [\"/foo\" \"/bar\"]"
                    (pr-str v)))))
         (testing "in AWS (using a #config/property)"
-          (System/setProperty "foo.path" "/foo")
           (let [v (config-aws/read-ssm [#config/property "foo.path" "/bar"])]
             (is (true? (config/provided? v)))
             (is (= "blah" (config/extract v)))
