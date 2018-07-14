@@ -1,7 +1,10 @@
 (ns outpace.config-aws
   (:require [clojure.string :as str]
             [outpace.config :as config :refer [defconfig]])
-  (:import (com.amazonaws.client.builder AwsClientBuilder$EndpointConfiguration)
+  (:import (com.amazonaws.auth AWSStaticCredentialsProvider
+                               BasicAWSCredentials
+                               BasicSessionCredentials)
+           (com.amazonaws.client.builder AwsClientBuilder$EndpointConfiguration)
            (com.amazonaws.services.simplesystemsmanagement AWSSimpleSystemsManagement
                                                            AWSSimpleSystemsManagementClientBuilder)
            (com.amazonaws.services.simplesystemsmanagement.model GetParameterRequest
@@ -26,11 +29,19 @@
                :signing-region \"\"}"
   {})
 
+(defn ^:private credentials-provider
+  [{:keys [aws-access-key-id aws-secret-key session-token]}]
+  (let [credentials (if session-token
+                      (BasicAWSCredentials. aws-access-key-id aws-secret-key)
+                      (BasicSessionCredentials. aws-access-key-id aws-secret-key session-token))]
+    (AWSStaticCredentialsProvider. credentials)))
+
 (defn ^:private build-client
   "Builds an SSM client form the given client arguments."
-  [{:keys [endpoint] :as client-args}]
+  [{:keys [credentials endpoint] :as client-args}]
   (.build
     (cond-> (AWSSimpleSystemsManagementClientBuilder/standard)
+      credentials (.withCredentials (credentials-provider credentials))
       endpoint (.withEndpointConfiguration
                  (AwsClientBuilder$EndpointConfiguration.
                    (:service-endpoint endpoint)

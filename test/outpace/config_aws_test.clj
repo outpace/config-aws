@@ -12,9 +12,12 @@
   [f]
   (try
     (OutpaceUtil/setup)
-    (let [endpoint {:service-endpoint (Localstack/getEndpointSSM)
+    (let [credentials {:aws-access-key-id "outpace"
+                       :aws-secret-key "outpace"}
+          endpoint {:service-endpoint (Localstack/getEndpointSSM)
                     :signing-region (Localstack/getDefaultRegion)}]
-      (with-redefs [config-aws/ssm-client-args {:endpoint endpoint}]
+      (with-redefs [config-aws/ssm-client-args {:credentials credentials
+                                                :endpoint endpoint}]
         (f)))
     (finally
       (OutpaceUtil/teardown))))
