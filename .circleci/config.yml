@@ -3,13 +3,12 @@ version: 2
 jobs:
   build:
     working_directory: ~/config-aws
-    environment:
-      SERVICES: ssm
     docker:
       - image: circleci/clojure:boot-node
     environment:
       BOOT_JVM_OPTIONS: -Xms512m -Xmx1024m
       BOOT_WATCHERS_DISABLE: yes
+      SERVICES: ssm
     steps:
       - run: sudo apt-get install make python-pip python-virtualenv
       - checkout
