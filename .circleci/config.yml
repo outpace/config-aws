@@ -1,0 +1,21 @@
+---
+version: 2
+jobs:
+  build:
+    working_directory: ~/config-aws
+    docker:
+      - image: circleci/clojure:boot
+    environment:
+      BOOT_JVM_OPTIONS: -Xms512m -Xmx1024m
+      BOOT_WATCHERS_DISABLE: yes
+    steps:
+      - checkout
+      - restore_cache:
+          key: config-aws-{{ checksum "boot.properties" }}-{{ checksum "build.boot" }}
+      - run: boot test
+      - save_cache:
+          paths:
+            - ~/.boot/cache/bin
+            - ~/.boot/cache/lib
+            - ~/.m2
+          key: config-aws-{{ checksum "boot.properties" }}-{{ checksum "build.boot" }}
