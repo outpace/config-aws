@@ -3,6 +3,10 @@ version: 2
 jobs:
   build:
     working_directory: ~/config-aws
+    environment:
+      AWS_ACCESS_KEY_ID: config-aws
+      AWS_SECRET_KEY: config-aws
+      SERVICES: ssm
     docker:
       - image: circleci/clojure:boot-node
     environment:
