@@ -1,0 +1,73 @@
+= config-aws
+:sectanchors:
+:sectlinks:
+
+image:https://circleci.com/gh/outpace/config-aws/tree/master.svg?style=svg[“CircleCI”, link=”https://circleci.com/gh/outpace/config-aws/tree/master”]
+
+`config-aws` provides extensions to the https://github.com/outpace/config[Outpace config library] to allow for obtaining configuration from AWS.
+Current support includes:
+
+* https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-paramstore.html[AWS Systems Manager Parameter Store]
+
+== Usage
+
+[NOTE]
+====
+In order to be able to read values from AWS you will need to use credentials that are allowed to access the necessary AWS resources.
+The library uses the default credentials lookup provided by the SDK.
+If you need to specify specific credentials, you can set up <<custom-credentials, custom credentials>>.
+====
+
+=== Getting a parameter value from SSM
+
+You can use the `#config-aws/ssm` tag to read a parameter value from SSM.
+The simplest form is to simply tag a string:
+
+[source, clojure]
+.Configuration with a named path/string
+----
+#config-aws/ssm "/path/to/variable"
+----
+
+This will look up the SSM parameter at `/path/to/variable`.
+
+Sometimes, it is desirable to build up a parameter’s name from other configuration.
+For this reason, it also possible to tag a vector:
+
+[source, clojure]
+.Configuration from a configured path/vector
+----
+#config-aws/ssm [“/common/prefix”
+                 #config/env "APP_PATH"
+                 "/param-name"]
+----
+
+In the above example, before looking in SSM, config will fetch the value of the environment variable `APP_PATH`.
+Once that has been retrieved, the strings will all be appended together.
+For example, if the value of `APP_PATH` is `/production`, the parameter that will be looked up will be `/common/prefix/production/param-name`.
+
+
+=== Configuring the AWS client
+
+This library provides the defconfigured var `outpace.config-aws/ssm-client-params`, which can be used to change how the library communicates with AWS.
+This value of this var is a map which contains overrides to the standard client configuration as provided by AWS.
+The valid keys in this map include:
+
+
+[[custom-credentials]]
+`:credentials`::
+  If provided, static credentials are used instead of the default AWS credentials.
+  The two required parameters are `:aws-access-key-id` and `:aws-secret-key`.
+  An optional `:session-token` may also be provided.
+`:endpoint`::
+  Specifies an alternate endpoint for SSM.
+  Required parameters are `:service-endpoint` and `:signing-region`.
+
+
+== Roadmap
+
+Potential features to add:
+
+* Support https://aws.amazon.com/es/secrets-manager/[AWS Secrets Manager]
+* Support for more client configuration via `outpace.config-aws/ssm-client-args`
+* Support for recursive lookups of SSM parameters
