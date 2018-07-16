@@ -3,6 +3,7 @@
 :sectlinks:
 
 image:https://circleci.com/gh/outpace/config-aws/tree/master.svg?style=svg[“CircleCI”, link=”https://circleci.com/gh/outpace/config-aws/tree/master”]
+image:https://img.shields.io/clojars/v/com.outpace/config-aws.svg[“Clojars Project”, link=”https://clojars.org/com.outpace/config-aws”]
 
 `config-aws` provides extensions to the https://github.com/outpace/config[Outpace config library] to allow for obtaining configuration from AWS.
 Current support includes:
