@@ -38,6 +38,7 @@
                                      cider.nrep/wrap-version]})
 
 (task-options!
+  push {:repo "clojars"}
   pom {:project 'com.outpace/config-aws
        :version +version+
        :description "AWS extensions to com.outpace/config"
@@ -90,3 +91,13 @@
         (repl :server true)
         (watch :verbose true)
         (test)))
+
+(deftask deploy
+  "Deploys the library to Clojars."
+  []
+  (comp (build)
+        (push :tag true
+              :ensure-branch "master"
+              :ensure-clean true
+              :ensure-release true
+              :ensure-version +version+)))
