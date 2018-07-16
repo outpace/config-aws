@@ -1,6 +1,10 @@
+(def +version+ (second
+                 (re-find #"^VERSION=(.*)$"
+                          (slurp "version.properties"))))
+
 (set-env!
-  :source-paths #{"src"}
-  :resource-paths #{"resources"}
+  :source-paths #{"src/main/java"}
+  :resource-paths #{"src/main/clojure" "src/main/resources"}
   :dependencies '[[com.amazonaws/aws-java-sdk-ssm "1.11.366"]
                   [com.outpace/config "0.12.0" :exclusions [org.clojure/clojure]]
                   [org.clojure/clojure "1.9.0" :scope "provided"]
@@ -35,15 +39,26 @@
                                      cider.nrep/wrap-undef
                                      cider.nrep/wrap-version]})
 
+(task-options!
+  pom {:project 'com.outpace/config-aws
+       :version +version+
+       :description "AWS extensions to com.outpace/config"
+       :url "https://github.com/outpace/config-aws"
+       :scm {:url "https://github.com/outpace/config-aws"}
+       :license {"EPL" "http://www.eclipse.org/legal/epl-v10.html"}})
+
 (deftask build
-  "Builds the project.  In particular, compiles the Java source."
+  "Builds the project and installs it to the local repository."
   []
-  (javac))
+  (comp (javac)
+        (pom)
+        (jar)
+        (install)))
 
 (deftask with-testing
   "Sets up environment for running tests."
   []
-  (set-env! :source-paths #(conj % "test"))
+  (set-env! :resource-paths #(conj % "src/test/clojure"))
   identity)
 
 (ns-unmap *ns* 'test)
