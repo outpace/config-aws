@@ -2,8 +2,7 @@
   (:require [clojure.test :as t :refer [deftest is testing]]
             [outpace.config :as config]
             [outpace.config-aws :as config-aws])
-  (:import (cloud.localstack Localstack)
-           (com.amazonaws.services.simplesystemsmanagement.model DeleteParameterRequest
+  (:import (com.amazonaws.services.simplesystemsmanagement.model DeleteParameterRequest
                                                                  PutParameterRequest)
            (outpace.config_aws SsmVal)))
 
@@ -12,8 +11,8 @@
   [f]
   (let [credentials {:aws-access-key-id "outpace"
                      :aws-secret-key "outpace"}
-        endpoint {:service-endpoint (Localstack/getEndpointSSM)
-                  :signing-region (Localstack/getDefaultRegion)}]
+        endpoint {:service-endpoint "http://localhost:4583"
+                  :signing-region "us-east-1"}]
     (with-redefs [config-aws/ssm-client-args {:credentials credentials
                                               :endpoint endpoint}]
       (f))))

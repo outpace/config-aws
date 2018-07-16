@@ -5,12 +5,7 @@
   :resource-paths #{"src" "resources"}
   :dependencies '[[com.amazonaws/aws-java-sdk-ssm "1.11.366"]
                   [com.outpace/config "0.12.0" :exclusions [org.clojure/clojure]]
-                  [org.clojure/clojure "1.9.0" :scope "provided"]
-
-                  ;; test dependencies
-                  [cloud.localstack/localstack-utils "0.1.14" :scope "test"
-                   :exclusions [commons-logging
-                                joda-time]]]
+                  [org.clojure/clojure "1.9.0" :scope "provided"]]
   :repl-options {:nrepl-middleware '[cider.nrep/wrap-apropos
                                      cider.nrep/wrap-classpath
                                      cider.nrep/wrap-complete
