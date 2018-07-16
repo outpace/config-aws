@@ -1,8 +1,8 @@
 (def +version+ "0.1.1-SNAPSHOT")
 
 (set-env!
-  :source-paths #{"src/main/java"}
-  :resource-paths #{"src/main/clojure" "src/main/resources"}
+  :source-paths #{}
+  :resource-paths #{"src" "resources"}
   :dependencies '[[com.amazonaws/aws-java-sdk-ssm "1.11.366"]
                   [com.outpace/config "0.12.0" :exclusions [org.clojure/clojure]]
                   [org.clojure/clojure "1.9.0" :scope "provided"]
@@ -49,15 +49,14 @@
 (deftask build
   "Builds the project and installs it to the local repository."
   []
-  (comp (javac)
-        (pom)
+  (comp (pom)
         (jar)
         (install)))
 
 (deftask with-testing
   "Sets up environment for running tests."
   []
-  (set-env! :resource-paths #(conj % "src/test/clojure"))
+  (set-env! :resource-paths #(conj % "test"))
   identity)
 
 (ns-unmap *ns* 'test)
@@ -83,11 +82,22 @@
     (comp (add-middleware)
           (with-testing))))
 
+(deftask with-localstack
+  "Runs the boot tasks within the context of localstack running via
+  docker-compose."
+  []
+  (comp (with-pre-wrap fileset
+          (dosh "docker-compose" "up" "-d")
+          (commit! fileset))
+        (with-post-wrap fileset
+          (dosh "docker-compose" "stop"))))
+
 (deftask dev
   "Runs in development mode, which includes a CIDER-enable nREPL server with
   automatic retesting and namespace refreshment."
   []
-  (comp (with-dev)
+  (comp (with-localstack)
+        (with-dev)
         (repl :server true)
         (watch :verbose true)
         (test)))

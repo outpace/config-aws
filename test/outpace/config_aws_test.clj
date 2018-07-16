@@ -2,7 +2,7 @@
   (:require [clojure.test :as t :refer [deftest is testing]]
             [outpace.config :as config]
             [outpace.config-aws :as config-aws])
-  (:import (cloud.localstack Localstack OutpaceUtil)
+  (:import (cloud.localstack Localstack)
            (com.amazonaws.services.simplesystemsmanagement.model DeleteParameterRequest
                                                                  PutParameterRequest)
            (outpace.config_aws SsmVal)))
@@ -10,17 +10,13 @@
 (defn ^:private with-localstack*
   "Runs the given function within the scope of a localstack infrastructure."
   [f]
-  (try
-    (OutpaceUtil/setup)
-    (let [credentials {:aws-access-key-id "outpace"
-                       :aws-secret-key "outpace"}
-          endpoint {:service-endpoint (Localstack/getEndpointSSM)
-                    :signing-region (Localstack/getDefaultRegion)}]
-      (with-redefs [config-aws/ssm-client-args {:credentials credentials
-                                                :endpoint endpoint}]
-        (f)))
-    (finally
-      (OutpaceUtil/teardown))))
+  (let [credentials {:aws-access-key-id "outpace"
+                     :aws-secret-key "outpace"}
+        endpoint {:service-endpoint (Localstack/getEndpointSSM)
+                  :signing-region (Localstack/getDefaultRegion)}]
+    (with-redefs [config-aws/ssm-client-args {:credentials credentials
+                                              :endpoint endpoint}]
+      (f))))
 
 (defmacro ^:private with-localstack
   [& body]

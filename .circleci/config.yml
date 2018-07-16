@@ -4,13 +4,12 @@ jobs:
   build:
     working_directory: ~/config-aws
     docker:
-      - image: circleci/clojure:boot-node
+      - image: circleci/clojure:boot
+      - image: localstack/localstack
     environment:
       BOOT_JVM_OPTIONS: -Xms512m -Xmx1024m
       BOOT_WATCHERS_DISABLE: yes
-      SERVICES: ssm
     steps:
-      - run: sudo apt-get install make python-pip python-virtualenv
       - checkout
       - restore_cache:
           key: config-aws-{{ checksum "boot.properties" }}-{{ checksum "build.boot" }}
