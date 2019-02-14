@@ -20,14 +20,7 @@
     (catch clojure.lang.Compiler$CompilerException _
       true)))
 
-(defconfig
-  ^{:validate [valid-ssm-client-args? "Must be valid SSM client configuration."]}
-  ssm-client-args
-  "A map used to configure the SSM client.  Current valid configuration includes:
-
-    :endpoint {:service-endpoint \"\"
-               :signing-region \"\"}"
-  {})
+(declare ssm-client-args)
 
 (defn ^:private credentials-provider
   [{:keys [aws-access-key-id aws-secret-key session-token]}]
@@ -96,3 +89,12 @@
     (throw (IllegalArgumentException.
              (format "Argument to #config-aws/ssm must be a string or a vector: %s"
                      (pr-str config))))))
+
+(defconfig
+  ^{:validate [valid-ssm-client-args? "Must be valid SSM client configuration."]}
+  ssm-client-args
+  "A map used to configure the SSM client.  Current valid configuration includes:
+
+    :endpoint {:service-endpoint \"\"
+               :signing-region \"\"}"
+  {})
