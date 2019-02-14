@@ -3,9 +3,9 @@
 (set-env!
   :source-paths #{}
   :resource-paths #{"src" "resources"}
-  :dependencies '[[com.amazonaws/aws-java-sdk-ssm "1.11.366"]
-                  [com.outpace/config "0.12.0" :exclusions [org.clojure/clojure]]
-                  [org.clojure/clojure "1.9.0" :scope "provided"]]
+  :dependencies '[[com.amazonaws/aws-java-sdk-ssm "1.11.499"]
+                  [com.outpace/config "0.13.1" :exclusions [org.clojure/clojure]]
+                  [org.clojure/clojure "1.10.0" :scope "provided"]]
   :repl-options {:nrepl-middleware '[cider.nrep/wrap-apropos
                                      cider.nrep/wrap-classpath
                                      cider.nrep/wrap-complete
